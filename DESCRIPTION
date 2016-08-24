@@ -1,0 +1,19 @@
+Package: pivotTableFlavoR
+Type: Package
+Title: A Pivot Table Flavor function, gadget and shiny module built in R
+Version: 0.0.01
+Author: Christopher Hopkinson
+Maintainer: <therealchristopherhopkinson@hotmail.com>
+Description: A Pivot Table Flavor function, gadget and shiny module built in R
+License: MIT
+LazyData: TRUE
+Imports: data.table,
+          plyr,
+          dplyr,
+          DT,
+          dtplyr,
+          magrittr,
+          miniUI,
+          purrr,
+          shiny
+Suggests: testthat

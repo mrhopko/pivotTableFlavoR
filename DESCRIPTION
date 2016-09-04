@@ -15,5 +15,6 @@ Imports: data.table,
           magrittr,
           miniUI,
           purrr,
-          shiny
+          shiny,
+          shinyBS
 Suggests: testthat

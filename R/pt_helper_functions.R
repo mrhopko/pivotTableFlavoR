@@ -1,11 +1,3 @@
-library(dtplyr)
-library(dplyr)
-library(data.table)
-library(purrr)
-library(shiny)
-library(miniUI)
-library(DT)
-
 new_pt_options <- function(pt_filter = NULL 
                        , pt_row = NA_character_ 
                        , pt_col = NA_character_ 
@@ -13,6 +5,7 @@ new_pt_options <- function(pt_filter = NULL
                        , pt_sort = NA_character_
                        , pt_subtotals = NA_character_ 
                        , pt_grand_totals = NA_character_ 
+                       , pt_calc_col = NULL
                        , pt_other = NULL) {
   
   me <- list(pt_filter = pt_filter,
@@ -22,6 +15,7 @@ new_pt_options <- function(pt_filter = NULL
              pt_sort = pt_sort,
              pt_subtotals = as.character(pt_subtotals),
              pt_grand_totals = as.character(pt_grand_totals),
+             pt_calc_col = pt_calc_col,
              pt_other = as.list(pt_other))
   
   class(me) <- c(class(me),"pt_options")
@@ -64,7 +58,7 @@ pt_calc.data.table <- function(x, pt_options) {
     x
   }
   
-  print(paste("after filter, ", paste(names(x), collapse = ",")))
+#  print(paste("after filter, ", paste(names(x), collapse = ",")))
   
   #Group & metrics
   x <- if(length(pt_group) > 0 & 
@@ -113,6 +107,31 @@ pt_calc.data.table <- function(x, pt_options) {
       x
     }
     
+  } else {
+    x
+  }
+  
+  
+  #Calculated Columns
+  x <- if(try(pt_options$pt_calc_col != "") & 
+          !is.null(pt_options$pt_calc_col)) {
+    
+    pt_calc_col <- if( substring( pt_options$pt_calc_col, 1, 5) != "`:=`(") {
+      paste0("`:=`(", pt_options$pt_calc_col, ")")
+    } else {
+      pt_options$pt_calc_col
+    }
+    
+    pt_calc_col = parse(text = pt_calc_col)
+    tryCatch({
+      x[,eval(pt_calc_col)]
+    },
+    error = function(cond) {
+      message(paste("Calculated Columns have failed: ",pt_options$pt_calc_col))
+      message(cond)
+      return(x)
+    }
+    )
   } else {
     x
   }
